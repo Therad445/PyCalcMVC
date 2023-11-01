@@ -60,12 +60,11 @@ class Model:
 
     def _change_type(self):
         self.value = self.value[1:] if self.value[0] == '-' else '-' + self.value
-    
 
     def _clear(self):
-            self.previous_value = ''
-            self.value = ''
-            self.operator = ''
+        self.previous_value = ''
+        self.value = ''
+        self.operator = ''
 
     def _decimal(self, caption):
         if caption not in self.value:
