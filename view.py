@@ -22,14 +22,27 @@ class View(tk.Tk):
         :param controller:
         """
         super().__init__()
-        self.title('PyTkCalc')
         self.controller = controller
         self.value_var = tk.StringVar()
-
+        self.title('PyTkCalc')
+        self.config(bg="black")
+        self._configure_button_styles()
         self._make_main_frame()
-        self._make_entry()
+        self._make_label()
         self._make_buttons()
         self._center_window()
+
+    def _configure_button_styles(self):
+        style = ttk.Style()
+        style.theme_use('alt')
+        # # There we look themes what we can use
+        # print(style.theme_names())
+        # # In my system I have that answer to respond
+        # # ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative') vista
+        # print(style.theme_use())
+        style.configure('N.TButton', foreground='white',  background='gray')
+        style.configure('O.TButton', foreground='white',  background='orange')
+        style.configure('M.TButton', foreground='white')
 
     def main(self):
         self.mainloop()
@@ -39,31 +52,50 @@ class View(tk.Tk):
         self.main_frm = ttk.Frame(self)
         self.main_frm.pack(padx=self.PAD, pady=self.PAD)
 
-    def _make_entry(self):
-        ent = ttk.Entry(
-            self.main_frm, justify='right', textvariable=self.value_var, state='disabled'
+    def _make_label(self):
+        lbl = tk.Label(
+            self.main_frm, anchor='e', textvariable=self.value_var, bg="black", fg="white", font=('Arial', 30)
         )
-        ent.pack(fill="x")
+        lbl.pack(fill="x")
 
     def _make_buttons(self):
         outer_frm = ttk.Frame(self.main_frm)
         outer_frm.pack()
-
-        frm = ttk.Frame(outer_frm)
-        frm.pack()
-
+        is_first_row = True
         buttons_in_row = 0
         for caption in self.button_captions:
-            if buttons_in_row == self.MAX_BUTTONS_PER_ROW:
+            if is_first_row or buttons_in_row == self.MAX_BUTTONS_PER_ROW:
+                is_first_row = False
                 frm = ttk.Frame(outer_frm)
-                frm.pack()
+                frm.pack(fill='x')
                 buttons_in_row = 0
 
+            if isinstance(caption, int):
+                style_prefix = 'N'
+            elif self._is_operator(caption):
+                style_prefix = 'O'
+            else:
+                style_prefix = 'M'
+
+            style_name = f'{style_prefix}.TButton'
+
             btn = ttk.Button(
-                frm, text=caption, command=(lambda button=caption: self.controller.on_button_click(button))
+                frm, text=caption, command=(
+                    lambda button=caption: self.controller.on_button_click(button)
+                    ),
+                style=style_name
                              )
-            btn.pack(side="left")
+            if caption == 0:
+                fill = 'x'
+                expand = 1
+            else:
+                fill = 'none'
+                expand = 0
+            btn.pack(fill=fill, expand=expand, side="left")
             buttons_in_row += 1
+
+    def _is_operator(self, button_caption):
+        return button_caption in ['/', '*', '-', '+', '=']
 
     def _center_window(self):
         self.update()
