@@ -33,7 +33,7 @@ class View(tk.Tk):
 
     def main(self):
         self.mainloop()
-        print('In main of view')
+        print('Program closed')
 
     def _make_main_frame(self):
         self.main_frm = ttk.Frame(self)
